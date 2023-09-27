@@ -3,15 +3,15 @@
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn dev",
     "devPath": "http://localhost:3000",
-    "distDir": "../"
+    "distDir": "../out"
   },
   "package": {
-    "productName": "requeste-rs",
+    "productName": "requeste-rs-2",
     "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "all": false
     },
     "bundle": {
       "active": true,

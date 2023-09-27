@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "./page.module.css";
+import { invoke } from "@tauri-apps/api/tauri";
 
 enum Method {
   GET = "GET",
@@ -21,6 +22,11 @@ const ALL_REQUEST_METHODS: Method[] = [
   Method.HEAD,
 ];
 
+interface Response {
+  status: number;
+  bodyString: String;
+}
+
 export default function Home() {
   const [method, setMethod] = useState<Method>(Method.GET);
   const [url, setUrl] = useState<string>("");
@@ -29,45 +35,55 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <div className={styles.menuBar}></div>
-      <div className={styles.line} />
-      <div className={styles.container}>
-        <div className={styles.requestContainer}>
-          <div className={styles.urlContainer}>
-            <select
-              value={method}
-              className={`${styles.methodDropdown} ${
-                styles[`methodDropdown${method}`]
-              }`}
+      <div className={styles.requestContainer}>
+        <div className={styles.urlContainer}>
+          <select
+            value={method}
+            className={`${styles.methodDropdown} ${
+              styles[`methodDropdown${method}`]
+            }`}
+            onChange={(e) => {
+              setMethod(e.target.value as Method);
+            }}
+          >
+            {ALL_REQUEST_METHODS.map((m) => (
+              <option key={m}>{m}</option>
+            ))}
+          </select>
+          <div className={styles.urlInputContainer}>
+            <input
+              value={url}
               onChange={(e) => {
-                setMethod(e.target.value as Method);
+                setUrl(e.target.value);
               }}
-            >
-              {ALL_REQUEST_METHODS.map((m) => (
-                <option key={m}>{m}</option>
-              ))}
-            </select>
-            <div className={styles.urlInputContainer}>
-              <input
-                value={url}
-                onChange={(e) => {
-                  setUrl(e.target.value);
-                }}
-                className={styles.urlInput}
-              />
-            </div>
-            <button
-              disabled={url.length === 0}
-              className={styles.sendRequestButton}
-              onClick={() => {
-                console.log(`SENDING ${method} REQUEST TO ${url}`);
-              }}
-            >
-              SEND
-            </button>
+              className={styles.urlInput}
+            />
           </div>
+          <button
+            disabled={url.length === 0}
+            className={styles.sendRequestButton}
+            onClick={() => {
+              invoke("send_request", {
+                request: { url: url, method: method },
+              })
+                .then((resp) => {
+                  setResponse(resp as Response);
+                })
+                .catch((err) => {
+                  console.error("Failed to send request, err: ", err);
+                });
+            }}
+          >
+            SEND
+          </button>
         </div>
-        <div className={styles.line} />
-        <div className={styles.responseContainer}>{response?.status}</div>
+      </div>
+      <div className={styles.responseContainer}>
+        {response?.status}
+        <br />
+        <code className={styles.codeBlock}>
+          <pre>{response?.bodyString}</pre>
+        </code>
       </div>
     </main>
   );

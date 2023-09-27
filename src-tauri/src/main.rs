@@ -1,7 +1,5 @@
-#![cfg_attr(
-    all(not(debug_assertions), target_os = "windows"),
-    windows_subsystem = "windows"
-)]
+// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -14,6 +12,7 @@ fn main() {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
 enum Method {
     Get,
     Post,
@@ -43,14 +42,10 @@ struct Request {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 struct Response {
-    status: Status,
-}
-
-#[derive(Serialize)]
-struct Status {
-    code: u8,
-    text: String,
+    status: u16,
+    body_string: String,
 }
 
 #[tauri::command]
@@ -60,12 +55,13 @@ async fn send_request(request: Request) -> Result<Response, String> {
         .request(request.method.into(), request.url)
         .send()
         .await
-        .map_err(String::from)?;
+        .map_err(|e| e.to_string())?;
+
+    let response_status = response.status().as_u16();
+    let response_body = response.text().await.map_err(|e| e.to_string())?;
 
     Ok(Response {
-        status: Status {
-            code: 200,
-            text: "OK".into(),
-        },
+        status: response_status,
+        body_string: response_body,
     })
 }
