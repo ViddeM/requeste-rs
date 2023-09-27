@@ -3,6 +3,8 @@
 import { useState } from "react";
 import styles from "./page.module.css";
 import { invoke } from "@tauri-apps/api/tauri";
+import { ResponseView } from "@/components/response/ResponseView";
+import { Response } from "@/types/response";
 
 enum Method {
   GET = "GET",
@@ -22,15 +24,11 @@ const ALL_REQUEST_METHODS: Method[] = [
   Method.HEAD,
 ];
 
-interface Response {
-  status: number;
-  bodyString: String;
-}
-
 export default function Home() {
   const [method, setMethod] = useState<Method>(Method.GET);
   const [url, setUrl] = useState<string>("");
   const [response, setResponse] = useState<Response | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   return (
     <main className={styles.main}>
@@ -67,23 +65,25 @@ export default function Home() {
                 request: { url: url, method: method },
               })
                 .then((resp) => {
+                  setRequestError(null);
                   setResponse(resp as Response);
                 })
                 .catch((err) => {
-                  console.error("Failed to send request, err: ", err);
+                  setRequestError(`Failed to send request, err: ${err}`);
                 });
             }}
           >
             SEND
           </button>
         </div>
+        {requestError && <p>{requestError}</p>}
       </div>
       <div className={styles.responseContainer}>
-        {response?.status}
-        <br />
-        <code className={styles.codeBlock}>
-          <pre>{response?.bodyString}</pre>
-        </code>
+        {response ? (
+          <ResponseView response={response} />
+        ) : (
+          <div>Send a request!</div>
+        )}
       </div>
     </main>
   );

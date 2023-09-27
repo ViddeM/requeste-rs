@@ -1,7 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use reqwest::Client;
+use std::collections::HashMap;
+
+use reqwest::{
+    header::{HeaderMap, HeaderName, HeaderValue},
+    Client,
+};
 use serde::{Deserialize, Serialize};
 
 fn main() {
@@ -45,6 +50,7 @@ struct Request {
 #[serde(rename_all = "camelCase")]
 struct Response {
     status: u16,
+    headers: HashMap<String, String>,
     body_string: String,
 }
 
@@ -58,10 +64,25 @@ async fn send_request(request: Request) -> Result<Response, String> {
         .map_err(|e| e.to_string())?;
 
     let response_status = response.status().as_u16();
+    let headers = response
+        .headers()
+        .iter()
+        .map(map_header)
+        .collect::<Result<HashMap<String, String>, String>>()?;
     let response_body = response.text().await.map_err(|e| e.to_string())?;
 
     Ok(Response {
         status: response_status,
+        headers,
         body_string: response_body,
     })
+}
+
+fn map_header((name, val): (&HeaderName, &HeaderValue)) -> Result<(String, String), String> {
+    match val.to_str() {
+        Ok(v) => Ok((name.as_str().into(), v.into())),
+        Err(e) => Err(format!(
+            "Failed to convert header value to string, err: {e:?}"
+        )),
+    }
 }

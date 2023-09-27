@@ -105,13 +105,3 @@
 .requestMethod {
   margin-left: 5px;
 }
-
-.codeBlock {
-  background-color: #222222;
-  border: 1px solid white;
-  padding: 6px;
-  border-radius: 8px;
-  color: yellowgreen;
-  overflow: scroll;
-  max-width: 100% !important;
-}
