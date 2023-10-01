@@ -44,6 +44,13 @@ impl From<Method> for reqwest::Method {
 struct Request {
     url: String,
     method: Method,
+    headers: Vec<Header>,
+}
+
+#[derive(Deserialize)]
+struct Header {
+    name: String,
+    value: String,
 }
 
 #[derive(Serialize)]
@@ -57,8 +64,28 @@ struct Response {
 #[tauri::command]
 async fn send_request(request: Request) -> Result<Response, String> {
     let client = Client::new();
+
+    let header_map: HeaderMap = request
+        .headers
+        .into_iter()
+        .map(|h| {
+            (
+                HeaderName::from_lowercase(h.name.to_lowercase().as_bytes())
+                    .map_err(|e| format!("Invalid header name, err: {e:?}")),
+                HeaderValue::from_str(h.value.as_str())
+                    .map_err(|e| format!("Invalid header value, err: {e:?}")),
+            )
+        })
+        .map(|h| match h {
+            (Ok(n), Ok(v)) => Ok((n, v)),
+            (Err(e), _) => Err(e),
+            (_, Err(e)) => Err(e),
+        })
+        .collect::<Result<HeaderMap, String>>()?;
+
     let response = client
         .request(request.method.into(), request.url)
+        .headers(header_map)
         .send()
         .await
         .map_err(|e| e.to_string())?;
