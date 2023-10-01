@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./page.module.css";
 import { invoke } from "@tauri-apps/api/tauri";
 import { ResponseView } from "@/components/response/ResponseView";
+import styles from "./page.module.scss";
 import { Response } from "@/types/response";
 
 enum Method {

@@ -1,0 +1,13 @@
+.main {
+  display: grid;
+  flex-direction: row;
+  min-height: 100vh;
+  align-items: stretch;
+  background-color: #222222;
+
+  grid-template-columns: 19rem minmax(0, 0.5fr) minmax(0, 0.5fr);
+}
+
+.menuBar {
+  background-color: #444444;
+}
