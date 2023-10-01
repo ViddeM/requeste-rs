@@ -73,3 +73,10 @@
     background-color: #B0B0B0;
     color: black;
 }
+
+.responseContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background-color: #666666;
+}
