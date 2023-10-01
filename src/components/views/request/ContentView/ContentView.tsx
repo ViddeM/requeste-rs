@@ -4,6 +4,7 @@ import {
   RequestHeadersProps,
   RequestHeadersView,
 } from "./RequestHeadersView/RequestHeadersView";
+import { RequestBodyView } from "./RequestBodyView/RequestBodyView";
 
 type ContentViewProps = {} & RequestHeadersProps;
 
@@ -22,7 +23,7 @@ export const ContentView = ({ ...props }: ContentViewProps) => {
         display={(v) => v.toUpperCase()}
       />
       {requestView === "body" ? (
-        <div>NOT IMPLEMENTED</div>
+        <RequestBodyView />
       ) : (
         <RequestHeadersView {...props} />
       )}

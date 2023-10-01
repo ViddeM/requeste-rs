@@ -11,3 +11,9 @@ export interface Header {
   name: string;
   value: string;
 }
+
+export enum BodyTypes {
+  Json = "Json",
+  XML = "XML",
+  Text = "Text",
+}

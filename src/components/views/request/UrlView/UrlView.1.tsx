@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./UrlView.module.scss";
 import { Method } from "@/types/request";
+import { DropdownBase } from "@/components/elements/dropdown/Dropdown";
 
 const ALL_REQUEST_METHODS: Method[] = [
   Method.GET,
@@ -21,19 +22,19 @@ export const UrlView = ({
 
   return (
     <div className={styles.urlContainer}>
-      <select
+      <DropdownBase
         value={method}
-        className={`${styles.methodDropdown} ${
-          styles[`methodDropdown${method}`]
-        }`}
+        className={`${styles.methodDropdown}`}
+        options={ALL_REQUEST_METHODS.map((m) => {
+          return {
+            display: m,
+            value: m,
+          };
+        })}
         onChange={(e) => {
           setMethod(e.target.value as Method);
         }}
-      >
-        {ALL_REQUEST_METHODS.map((m) => (
-          <option key={m}>{m}</option>
-        ))}
-      </select>
+      />
       <div className={styles.urlInputContainer}>
         <input
           value={url}
