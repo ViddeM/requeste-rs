@@ -20,7 +20,11 @@ export const RequestView = ({
   const sendRequest = (url: string, method: Method) => {
     console.log("SENDING REQUEST");
     invoke("send_request", {
-      request: { url: url, method: method, headers: headers },
+      request: {
+        url: url,
+        method: method,
+        headers: headers.filter((h) => h.name !== ""),
+      },
     })
       .then((resp) => {
         setRequestError(null);
