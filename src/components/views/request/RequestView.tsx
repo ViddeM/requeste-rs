@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./RequestView.module.scss";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Response } from "@/types/response";
-import { UrlView } from "./UrlView/UrlView.1";
+import { UrlView } from "./UrlView/UrlView";
 import { Header, Method } from "@/types/request";
 import { ContentView } from "./ContentView/ContentView";
 
