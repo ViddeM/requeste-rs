@@ -2,3 +2,21 @@
     display: flex;
     flex-direction: column;
 }
+
+.editorContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.codeLinesContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.codeTextArea {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    background-color: inherit;
+}
