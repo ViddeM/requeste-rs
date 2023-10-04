@@ -24,7 +24,9 @@ export const UrlView = ({
     <div className={styles.urlContainer}>
       <DropdownBase
         value={method}
-        className={`${styles.methodDropdown}`}
+        className={`${styles.methodDropdown} ${
+          styles[`methodDropdown${method}`]
+        }`}
         options={ALL_REQUEST_METHODS.map((m) => {
           return {
             display: m,
