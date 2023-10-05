@@ -1,5 +1,4 @@
-import { FC, InputHTMLAttributes, TextareaHTMLAttributes } from "react";
-import styles from "./TextField.module.scss";
+import { FC, TextareaHTMLAttributes } from "react";
 
 export type TextAreaBaseProps = TextareaHTMLAttributes<HTMLTextAreaElement>;
 
