@@ -1,4 +1,4 @@
-import { FC, SelectHTMLAttributes } from "react";
+import { FC, Key, SelectHTMLAttributes } from "react";
 import styles from "./Dropdown.module.scss";
 
 export interface Option {
@@ -14,7 +14,7 @@ export const DropdownBase: FC<DropdownBaseProps> = ({ options, ...props }) => {
   return (
     <select {...props}>
       {options.map((o) => (
-        <DropdownOption option={o} />
+        <DropdownOption key={o.value as Key} option={o} />
       ))}
     </select>
   );
