@@ -17,14 +17,18 @@ export const RequestBodyView = () => {
 
   return (
     <div className={styles.requestBodyViewContainer}>
-      <Dropdown
-        options={ALL_BODY_TYPES.map((t) => {
-          return {
-            display: t,
-            value: t,
-          };
-        })}
-      />
+      <div>
+        <Dropdown
+          options={ALL_BODY_TYPES.map((t) => {
+            return {
+              display: t,
+              value: t,
+            };
+          })}
+          className={styles.bodyTypeDropdown}
+        />
+        <Button onClick={() => setJson(formatJson(json))}>Format JSON</Button>
+      </div>
       <div className={styles.editorContainer}>
         <div className={styles.codeLinesContainer}>
           {Array.from(Array(rowCount).keys()).map((n) => (
@@ -39,7 +43,6 @@ export const RequestBodyView = () => {
           onChange={(e) => setJson(e.target.value)}
         />
       </div>
-      <Button onClick={() => setJson(formatJson(json))}>Format JSON</Button>
     </div>
   );
 };
