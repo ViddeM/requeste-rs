@@ -1,11 +1,16 @@
 .requestBodyViewContainer {
     display: flex;
     flex-direction: column;
+    margin: 1rem;
 }
 
 .editorContainer {
     display: flex;
     flex-direction: row;
+    padding: 6px;
+    margin: 1rem 0;
+    background-color: #404040;
+    border-radius: 5px;
 }
 
 .codeLinesContainer {
@@ -18,5 +23,13 @@
     border: none;
     outline: none;
     resize: none;
+    color: #A0A050;
+    font-weight: bold;
     background-color: inherit;
+}
+
+.divider {
+    width: 1px;
+    background-color: white;
+    margin: 0 10px;
 }
