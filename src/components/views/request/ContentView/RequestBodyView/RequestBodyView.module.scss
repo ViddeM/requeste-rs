@@ -1,3 +1,5 @@
+@import "/src/resources/styles/vars.scss";
+
 .requestBodyViewContainer {
     display: flex;
     flex-direction: column;
@@ -11,6 +13,8 @@
     margin: 1rem 0;
     background-color: #404040;
     border-radius: 5px;
+
+    font-family: $font-code-mono;
 }
 
 .codeLinesContainer {
@@ -19,6 +23,7 @@
 }
 
 .codeTextArea {
+    font-family: $font-code-mono;
     flex: 1;
     border: none;
     outline: none;
