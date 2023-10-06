@@ -1,4 +1,8 @@
-import "./globals.scss";
+import "../resources/styles/globals.scss";
+import "../resources/styles/fira_code_normal.scss";
+import "../resources/styles/fira_code_mono.scss";
+import "../resources/styles/fira_code_propo.scss";
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
