@@ -1,5 +1,7 @@
 import { FC, Key, SelectHTMLAttributes } from "react";
 import styles from "./Dropdown.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
 
 export interface Option {
   display: string;

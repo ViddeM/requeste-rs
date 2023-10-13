@@ -4,6 +4,8 @@ import { BodyTypes } from "@/types/request";
 import styles from "./RequestBodyView.module.scss";
 import { Key, useState } from "react";
 import { Button } from "@/components/elements/button/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
 
 const ALL_BODY_TYPES: BodyTypes[] = [
   BodyTypes.Json,
@@ -17,7 +19,7 @@ export const RequestBodyView = () => {
 
   return (
     <div className={styles.requestBodyViewContainer}>
-      <div>
+      <div className={styles.requestBodyButtonGroup}>
         <Dropdown
           options={ALL_BODY_TYPES.map((t) => {
             return {
@@ -27,7 +29,7 @@ export const RequestBodyView = () => {
           })}
           className={styles.bodyTypeDropdown}
         />
-        <Button onClick={() => setJson(formatJson(json))}>Format JSON</Button>
+        <Button className={styles.formatCodeButton} onClick={() => setJson(formatJson(json))}>Format JSON</Button>
       </div>
       <div className={styles.editorContainer}>
         <div className={styles.codeLinesContainer}>
