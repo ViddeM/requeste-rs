@@ -21,6 +21,8 @@
 .codeLinesContainer {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
+    min-width: 2rem;
 }
 
 .codeTextArea {
