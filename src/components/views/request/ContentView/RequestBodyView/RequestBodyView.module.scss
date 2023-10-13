@@ -42,6 +42,31 @@
     margin: 0 10px;
 }
 
+.requestBodyButtonGroup {
+    & > * {
+        background-color: black;
+        border: 1px solid white;
+        height: 2rem;
+        border-radius: 6px;
+        border-right: none;
+        min-width: 60px;
+        
+        &:first-child {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &:last-child {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-right: 1px solid white;
+        }
+    }
+}
+
 .bodyTypeDropdown {
+}
+
+.formatCodeButton {
     
 }

@@ -4,6 +4,12 @@
     padding: 6px;
     text-align: right;
     font-weight: bolder;
-    background: #303030;
+    background-color: #303030;
     appearance: none;
+
+    // Caret (not stolen from mozilla)
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath fill='none' fill-rule='evenodd' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m5 9 7 7 7-7'/%3E%3C/svg%3E");
+    background-position: right 8px top 50%;
+    background-repeat: no-repeat, repeat;
+    background-size: 1.5em auto, 100%;
 }
