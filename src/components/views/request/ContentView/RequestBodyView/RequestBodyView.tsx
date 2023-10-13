@@ -48,9 +48,12 @@ export const RequestBodyView = () => {
 };
 
 function formatJson(json: string): string {
+  // Because Mac is fucked and replaces all " with “ ” (start/end of quotes) and the JSON.parse method doesn't know what to do with those...
+  let jsonToParse = json.replaceAll('“', '"').replaceAll('”', '"');
+
   let jsonObj = null;
   try {
-    jsonObj = JSON.parse(json);
+    jsonObj = JSON.parse(jsonToParse);
   } catch (error) {
     console.error("Failed to parse json, error:", error);
   }
