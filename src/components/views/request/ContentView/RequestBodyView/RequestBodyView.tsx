@@ -4,8 +4,6 @@ import { BodyTypes } from "@/types/request";
 import styles from "./RequestBodyView.module.scss";
 import { Key, useState } from "react";
 import { Button } from "@/components/elements/button/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
 
 const ALL_BODY_TYPES: BodyTypes[] = [
   BodyTypes.Json,
@@ -15,6 +13,7 @@ const ALL_BODY_TYPES: BodyTypes[] = [
 
 export const RequestBodyView = () => {
   const [json, setJson] = useState<string>("");
+  const [jsonParseError, setJsonParseError] = useState<string | null>(null);
   const rowCount = json.split("\n").length;
 
   return (
@@ -29,8 +28,16 @@ export const RequestBodyView = () => {
           })}
           className={styles.bodyTypeDropdown}
         />
-        <Button className={styles.formatCodeButton} onClick={() => setJson(formatJson(json))}>Format JSON</Button>
+        <Button
+          className={styles.formatCodeButton}
+          onClick={() => setJson(formatJson(json, setJsonParseError))}
+        >
+          Format JSON
+        </Button>
       </div>
+      {jsonParseError && (
+        <p className={styles.jsonParseError}>FAILED TO PARSE JSON!</p>
+      )}
       <div className={styles.editorContainer}>
         <div className={styles.codeLinesContainer}>
           {Array.from(Array(rowCount).keys()).map((n) => (
@@ -49,16 +56,23 @@ export const RequestBodyView = () => {
   );
 };
 
-function formatJson(json: string): string {
+function formatJson(
+  json: string,
+  setError: (error: string | null) => void
+): string {
   // Because Mac is fucked and replaces all " with “ ” (start/end of quotes) and the JSON.parse method doesn't know what to do with those...
-  let jsonToParse = json.replaceAll('“', '"').replaceAll('”', '"');
+  let jsonToParse = json.replaceAll("“", '"').replaceAll("”", '"');
 
   let jsonObj = null;
   try {
     jsonObj = JSON.parse(jsonToParse);
   } catch (error) {
     console.error("Failed to parse json, error:", error);
+    setError("Failed to parse json");
+    return json;
   }
+
+  setError(null);
 
   if (jsonObj === null) {
     return "";
