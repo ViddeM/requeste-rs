@@ -73,7 +73,7 @@ const ResponseHeadersView = ({ headers }: ResponseHeadersViewProps) => {
       </thead>
       <tbody>
         {Object.entries(headers).map(([key, val]) => (
-          <tr>
+          <tr key={key}>
             <td align="left">{key}:</td>
             <td align="left">{val}</td>
           </tr>
