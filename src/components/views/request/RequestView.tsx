@@ -18,7 +18,6 @@ export const RequestView = ({
   const [headers, setHeaders] = useState<Header[]>([]);
 
   const sendRequest = (url: string, method: Method) => {
-    console.log("SENDING REQUEST");
     invoke("send_request", {
       request: {
         url: url,
@@ -27,10 +26,12 @@ export const RequestView = ({
       },
     })
       .then((resp) => {
+        console.log("Success resp", resp);
         setRequestError(null);
         setResponse(resp as Response);
       })
       .catch((err) => {
+        console.log("Error resp", err);
         setRequestError(`Failed to send request, err: ${err}`);
       });
   };

@@ -3,19 +3,19 @@
 .requestBodyViewContainer {
   display: flex;
   flex-direction: column;
-  margin: 1rem;
+  margin: $margin;
 }
 
 .editorContainer {
   display: flex;
   flex-direction: row;
-  padding: 6px;
-  margin: 1rem 0;
-  background-color: #404040;
-  border-radius: 5px;
+  padding: $padding;
+  margin: $margin 0;
+  background-color: $background-color-300;
+  border-radius: $border-radius;
 
   font-family: $font-code-mono;
-  font-size: 14px;
+  font-size: $font-size;
 }
 
 .codeLinesContainer {
@@ -26,12 +26,12 @@
 }
 
 .jsonParseError {
-  background-color: #202020;
-  color: #b03535;
+  background-color: $background-color-100;
+  color: $error-color-500;
   font-weight: bold;
-  font-size: 9;
-  padding: 6px;
-  border-radius: 5px;
+  font-size: $font-size-small;
+  padding: $padding;
+  border-radius: $border-radius;
   width: max-content;
 }
 
@@ -42,24 +42,21 @@
   border: none;
   outline: none;
   resize: none;
-  color: #a0a050;
+  color: $text-color-code-300;
   font-weight: bold;
   background-color: inherit;
 }
 
 .divider {
   width: 1px;
-  background-color: white;
+  background-color: $background-color-900;
   margin: 0 10px;
 }
 
 .requestBodyButtonGroup {
   & > * {
-    background-color: black;
-    border: 1px solid white;
     height: 2rem;
-    border-radius: 6px;
-    border-right: none;
+    border-radius: $border-radius;
     min-width: 60px;
 
     &:first-child {
@@ -70,7 +67,6 @@
     &:last-child {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
-      border-right: 1px solid white;
     }
   }
 }

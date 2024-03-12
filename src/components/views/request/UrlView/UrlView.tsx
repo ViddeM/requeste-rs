@@ -2,6 +2,11 @@ import { useState } from "react";
 import styles from "./UrlView.module.scss";
 import { Method } from "@/types/request";
 import { DropdownBase } from "@/components/elements/dropdown/Dropdown";
+import { Button, ButtonBase } from "@/components/elements/button/Button";
+import {
+  TextField,
+  TextFieldBase,
+} from "@/components/elements/input/TextField";
 
 const ALL_REQUEST_METHODS: Method[] = [
   Method.GET,
@@ -38,7 +43,7 @@ export const UrlView = ({
         }}
       />
       <div className={styles.urlInputContainer}>
-        <input
+        <TextFieldBase
           value={url}
           onChange={(e) => {
             setUrl(e.target.value);
@@ -46,13 +51,13 @@ export const UrlView = ({
           className={styles.urlInput}
         />
       </div>
-      <button
+      <ButtonBase
         disabled={url.length === 0}
         className={styles.sendRequestButton}
         onClick={() => sendRequest(url, method)}
       >
         SEND
-      </button>
+      </ButtonBase>
     </div>
   );
 };

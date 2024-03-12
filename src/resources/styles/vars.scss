@@ -1,3 +1,52 @@
-$font-code-mono: 'FiraCodeMono', sans-serif;
-$font-code: 'FiraCode', sans-serif;
-$font-code-propo: 'FiraCodePropo', sans-serif;
+// Fonts
+$font-code-mono: "FiraCodeMono", sans-serif;
+$font-code: "FiraCode", sans-serif;
+$font-code-propo: "FiraCodePropo", sans-serif;
+
+$font-size-small: 12px;
+$font-size: 18px;
+$font-size-large: 24px;
+$font-size-larger: 32px;
+
+// Colors
+$text-color-900: #ffffff;
+$text-color-700: #fff0ff;
+$text-color-500: #ffe0ff;
+$text-color-300: #ffd9ff;
+$text-color-100: #ffd0ff;
+
+$text-color-code-500: #9acd32;
+$text-color-code-300: #a0a050;
+
+$background-color-900: #606060;
+$background-color-800: #505050;
+$background-color-700: #404040;
+$background-color-600: #353535;
+$background-color-500: #222222;
+$background-color-400: #1c1c1c;
+$background-color-300: #161616;
+$background-color-200: #0f0f0f;
+$background-color-100: #040404;
+
+$primary-color-900: #f0b0f0;
+$primary-color-500: #9000a0;
+
+$method-color-get: #20b020;
+$method-color-post: orange;
+$method-color-put: #d060d0;
+$method-color-delete: #ff4040;
+$method-color-option: #8080ff;
+$method-color-head: lightblue;
+
+$error-color-500: #ff3535;
+
+// General styling
+$border-radius: 5px;
+
+$margin-large: 12px;
+$margin: 6px;
+$margin-small: 3px;
+
+$padding-large: 12px;
+$padding: 6px;
+$padding-small: 3px;

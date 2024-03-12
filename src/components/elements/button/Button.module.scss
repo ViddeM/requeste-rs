@@ -1,19 +1,21 @@
+@import "../../../resources/styles/vars.scss";
+
 .buttonBase {
   width: 140px;
   height: 3rem;
-  padding: 4px;
+  padding: $padding;
   border-radius: 0;
   border: none;
-  background-color: #505050;
-  color: white;
+  background-color: $background-color-700;
+  color: $text-color-700;
   border: none;
-  font-weight: 600;
+  font-weight: bold;
   cursor: pointer;
-  
+
   box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.1),
-  0px 4px 5px 0px rgba(0, 0, 0, 0.1), 0px 1px 10px 0px rgba(0, 0, 0, 0.1);
+    0px 4px 5px 0px rgba(0, 0, 0, 0.1), 0px 1px 10px 0px rgba(0, 0, 0, 0.1);
   transition: filter 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-  box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 
   &:hover {
     filter: brightness(0.8);
@@ -21,12 +23,12 @@
 
   &:active {
     box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
-    0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+      0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
   }
 
   &:disabled {
-    color: rgba(0, 0, 0, 0.26);
-    background-color: rgba(0, 0, 0, 0.12);
+    color: $text-color-100;
+    background-color: $background-color-300;
     cursor: default;
     box-shadow: none;
 
@@ -48,9 +50,9 @@
 .iconButton-small {
   width: 24px;
   height: 24px;
-  
+
   > * {
-    margin: 4px;
+    margin: $margin;
   }
 }
 
@@ -59,7 +61,7 @@
   height: 32px;
 
   > * {
-    margin: 4px;
+    margin: $margin;
   }
 }
 
@@ -68,6 +70,6 @@
   height: 48px;
 
   > * {
-    margin: 4px;
+    margin: $margin;
   }
 }

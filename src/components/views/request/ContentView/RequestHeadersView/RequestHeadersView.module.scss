@@ -1,6 +1,8 @@
+@import "../../../../../resources/styles/vars.scss";
+
 .requestHeadersTable {
-    width: 100%;
-    & td {
-        padding: 8px;
-    }
+  width: 100%;
+  & td {
+    padding: $padding;
+  }
 }
