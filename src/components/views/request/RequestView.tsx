@@ -5,19 +5,14 @@ import { Response } from "@/types/response";
 import { UrlView } from "./UrlView/UrlView";
 import { Header, Method } from "@/types/request";
 import { ContentView } from "./ContentView/ContentView";
+import { useResponse } from "@/hooks/useResponse";
 
-interface RequestViewProps {
-  setResponse: (response: Response) => void;
-  setRequestError: (requestError: string | null) => void;
-}
-
-export const RequestView = ({
-  setResponse,
-  setRequestError,
-}: RequestViewProps) => {
+export const RequestView = () => {
+  const { setResponse, setRequestError, setAwaitingResponse } = useResponse();
   const [headers, setHeaders] = useState<Header[]>([]);
 
   const sendRequest = (url: string, method: Method) => {
+    setAwaitingResponse(true);
     invoke("send_request", {
       request: {
         url: url,
@@ -33,6 +28,9 @@ export const RequestView = ({
       .catch((err) => {
         console.log("Error resp", err);
         setRequestError(`Failed to send request, err: ${err}`);
+      })
+      .finally(() => {
+        setAwaitingResponse(false);
       });
   };
 

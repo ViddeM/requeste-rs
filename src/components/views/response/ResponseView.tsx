@@ -1,26 +1,26 @@
-import { Response } from "@/types/response";
 import styles from "./ResponseView.module.scss";
 import { useState } from "react";
 import { Tabs } from "@/components/elements/tabs/Tabs";
+import { useResponse } from "@/hooks/useResponse";
 
 type ResponseViewPane = "raw" | "preview" | "headers";
 const ALL_RESPONSE_VIEWS: ResponseViewPane[] = ["raw", "preview", "headers"];
 
-interface ResponseViewProps {
-  response: Response | null;
-  requestError: string | null;
-}
-
-export const ResponseView = (props: ResponseViewProps) => {
+export const ResponseView = () => {
   return (
     <div className={styles.responseContainer}>
-      <ResponseContent {...props} />
+      <ResponseContent />
     </div>
   );
 };
 
-const ResponseContent = ({ response, requestError }: ResponseViewProps) => {
+const ResponseContent = () => {
+  const { requestError, response, awaitingResponse } = useResponse();
   const [responseView, setResponseView] = useState<ResponseViewPane>("raw");
+
+  if (awaitingResponse) {
+    return <p>waiting for response...</p>;
+  }
 
   if (requestError) {
     return <p>{requestError}</p>;
