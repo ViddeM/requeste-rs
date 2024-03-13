@@ -42,15 +42,15 @@ export const UrlView = ({
           setMethod(e.target.value as Method);
         }}
       />
-      <div className={styles.urlInputContainer}>
-        <TextFieldBase
-          value={url}
-          onChange={(e) => {
-            setUrl(e.target.value);
-          }}
-          className={styles.urlInput}
-        />
-      </div>
+      {/* <div className={styles.urlInputContainer}> */}
+      <TextFieldBase
+        value={url}
+        onChange={(e) => {
+          setUrl(e.target.value);
+        }}
+        className={styles.urlInput}
+      />
+      {/* </div> */}
       <ButtonBase
         disabled={url.length === 0}
         className={styles.sendRequestButton}

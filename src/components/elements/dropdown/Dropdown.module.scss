@@ -1,14 +1,14 @@
 @import "../../../resources/styles/vars.scss";
 
 .dropdownBase {
-  margin: $margin 0 $margin $margin;
   padding: $padding;
   text-align: right;
   font-weight: bolder;
-  background-color: $background-color-300;
+  height: 3rem;
+  background-color: $background-color-600;
   appearance: none;
   -moz-appearance: none;
-  border: 1px solid $primary-color-900;
+  border: 1px solid $background-color-900;
 
   // Caret (not stolen from mozilla)
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath fill='none' fill-rule='evenodd' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m5 9 7 7 7-7'/%3E%3C/svg%3E");
@@ -17,7 +17,6 @@
   background-size: 1.5em auto, 100%;
 
   &:focus {
-    outline: none;
-    border-color: $primary-color-900;
+    outline: 1px solid $primary-color-900;
   }
 }
