@@ -4,6 +4,7 @@ import { Method } from "@/types/request";
 import { DropdownBase } from "@/components/elements/dropdown/Dropdown";
 import { ButtonBase } from "@/components/elements/button/Button";
 import { TextFieldBase } from "@/components/elements/input/TextField";
+import { useRequest } from "@/hooks/useRequest";
 
 const ALL_REQUEST_METHODS: Method[] = [
   Method.GET,
@@ -14,13 +15,9 @@ const ALL_REQUEST_METHODS: Method[] = [
   Method.HEAD,
 ];
 
-export const UrlView = ({
-  sendRequest,
-}: {
-  sendRequest: (url: string, method: Method) => void;
-}) => {
-  const [method, setMethod] = useState<Method>(Method.GET);
-  const [url, setUrl] = useState<string>("");
+export const UrlView = () => {
+  const { sendRequest, request, setMethod, setUrl } = useRequest();
+  const { url, method } = request;
 
   return (
     <div className={styles.urlContainer}>
@@ -39,7 +36,6 @@ export const UrlView = ({
           setMethod(e.target.value as Method);
         }}
       />
-      {/* <div className={styles.urlInputContainer}> */}
       <TextFieldBase
         value={url}
         onChange={(e) => {
@@ -47,11 +43,10 @@ export const UrlView = ({
         }}
         className={styles.urlInput}
       />
-      {/* </div> */}
       <ButtonBase
         disabled={url.length === 0}
         className={styles.sendRequestButton}
-        onClick={() => sendRequest(url, method)}
+        onClick={() => sendRequest()}
       >
         SEND
       </ButtonBase>

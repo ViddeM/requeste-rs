@@ -1,17 +1,12 @@
 import { Tabs } from "@/components/elements/tabs/Tabs";
 import { useState } from "react";
-import {
-  RequestHeadersProps,
-  RequestHeadersView,
-} from "./RequestHeadersView/RequestHeadersView";
+import { RequestHeadersView } from "./RequestHeadersView/RequestHeadersView";
 import { RequestBodyView } from "./RequestBodyView/RequestBodyView";
-
-type ContentViewProps = {} & RequestHeadersProps;
 
 type RequestViewPane = "body" | "headers";
 const ALL_REQUEST_VIEWS: RequestViewPane[] = ["body", "headers"];
 
-export const ContentView = ({ ...props }: ContentViewProps) => {
+export const ContentView = () => {
   const [requestView, setRequestView] = useState<RequestViewPane>("body");
 
   return (
@@ -23,11 +18,7 @@ export const ContentView = ({ ...props }: ContentViewProps) => {
         setActiveTab={setRequestView}
         display={(v) => v.toUpperCase()}
       />
-      {requestView === "body" ? (
-        <RequestBodyView />
-      ) : (
-        <RequestHeadersView {...props} />
-      )}
+      {requestView === "body" ? <RequestBodyView /> : <RequestHeadersView />}
     </div>
   );
 };

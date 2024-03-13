@@ -4,16 +4,12 @@ import { Key } from "react";
 import styles from "./RequestHeadersView.module.scss";
 import { Header } from "@/types/request";
 import { faX } from "@fortawesome/free-solid-svg-icons/faX";
+import { useRequest } from "@/hooks/useRequest";
 
-export type RequestHeadersProps = {
-  headers: Header[];
-  setHeaders: (header: Header[]) => void;
-};
+export const RequestHeadersView = () => {
+  const { request, setHeaders } = useRequest();
+  const { headers } = request;
 
-export const RequestHeadersView = ({
-  headers,
-  setHeaders,
-}: RequestHeadersProps) => {
   const updateHeaders = (newObj: Header, index: number) => {
     setHeaders(
       headers.map((h, i) => {
