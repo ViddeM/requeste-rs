@@ -17,8 +17,8 @@
     cursor: default;
   }
 
-  &:last-child {
-    border-right: none;
+  &:not(:first-child) {
+    border-left: none;
   }
 }
 

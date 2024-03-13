@@ -1,5 +1,6 @@
 import { Method } from "@/types/request";
 import styles from "./MenubarView.module.scss";
+import { ButtonBase } from "@/components/elements/button/Button";
 
 interface RequestPreview {
   id: number;
@@ -23,7 +24,9 @@ const REQUESTS_TMP: RequestPreview[] = [
 export const MenubarView = () => {
   return (
     <div className={styles.menuBar}>
-      <div>Requests</div>
+      <div className={styles.menuHeader}>
+        <h3>Requests</h3>
+      </div>
       {REQUESTS_TMP.map((req) => (
         <RequestItem request={req} key={req.id} />
       ))}
@@ -33,9 +36,9 @@ export const MenubarView = () => {
 
 const RequestItem = ({ request }: { request: RequestPreview }) => {
   return (
-    <div>
+    <ButtonBase className={styles.requestItem}>
       <span>{request.method}</span>
       <h4>{request.name}</h4>
-    </div>
+    </ButtonBase>
   );
 };

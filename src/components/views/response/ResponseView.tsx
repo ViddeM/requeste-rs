@@ -31,7 +31,7 @@ const ResponseContent = ({ response, requestError }: ResponseViewProps) => {
   }
 
   return (
-    <div>
+    <>
       {requestError && <p> Error: {requestError}</p>}
       <div className={styles.responseHeader}>{response.status}</div>
       <Tabs
@@ -49,7 +49,7 @@ const ResponseContent = ({ response, requestError }: ResponseViewProps) => {
       ) : (
         <ResponseHeadersView headers={response.headers} />
       )}
-    </div>
+    </>
   );
 };
 
