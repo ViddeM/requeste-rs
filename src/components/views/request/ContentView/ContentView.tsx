@@ -19,6 +19,7 @@ export const ContentView = ({ ...props }: ContentViewProps) => {
       <Tabs
         values={ALL_REQUEST_VIEWS}
         activeTab={requestView}
+        standalone={true}
         setActiveTab={setRequestView}
         display={(v) => v.toUpperCase()}
       />

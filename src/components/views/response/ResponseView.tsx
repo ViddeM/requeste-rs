@@ -26,6 +26,7 @@ export const ResponseView = ({ response, requestError }: ResponseViewProps) => {
         <Tabs
           values={ALL_RESPONSE_VIEWS}
           activeTab={responseView}
+          standalone={false}
           setActiveTab={setResponseView}
           display={(v) => v.toUpperCase()}
         />
