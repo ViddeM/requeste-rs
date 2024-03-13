@@ -11,7 +11,15 @@ interface ResponseViewProps {
   requestError: string | null;
 }
 
-export const ResponseView = ({ response, requestError }: ResponseViewProps) => {
+export const ResponseView = (props: ResponseViewProps) => {
+  return (
+    <div className={styles.responseContainer}>
+      <ResponseContent {...props} />
+    </div>
+  );
+};
+
+const ResponseContent = ({ response, requestError }: ResponseViewProps) => {
   const [responseView, setResponseView] = useState<ResponseViewPane>("raw");
 
   if (!response) {
@@ -19,26 +27,24 @@ export const ResponseView = ({ response, requestError }: ResponseViewProps) => {
   }
 
   return (
-    <div className={styles.responseContainer}>
-      <div className={styles.responseViewContainer}>
-        {requestError && <p> Error: {requestError}</p>}
-        <div className={styles.responseHeader}>{response.status}</div>
-        <Tabs
-          values={ALL_RESPONSE_VIEWS}
-          activeTab={responseView}
-          standalone={false}
-          setActiveTab={setResponseView}
-          display={(v) => v.toUpperCase()}
-        />
+    <div>
+      {requestError && <p> Error: {requestError}</p>}
+      <div className={styles.responseHeader}>{response.status}</div>
+      <Tabs
+        values={ALL_RESPONSE_VIEWS}
+        activeTab={responseView}
+        standalone={false}
+        setActiveTab={setResponseView}
+        display={(v) => v.toUpperCase()}
+      />
 
-        {responseView === "raw" ? (
-          <RawResponseView bodyString={response.bodyString} />
-        ) : responseView === "preview" ? (
-          <PreviewResponseView bodyString={response.bodyString} />
-        ) : (
-          <ResponseHeadersView headers={response.headers} />
-        )}
-      </div>
+      {responseView === "raw" ? (
+        <RawResponseView bodyString={response.bodyString} />
+      ) : responseView === "preview" ? (
+        <PreviewResponseView bodyString={response.bodyString} />
+      ) : (
+        <ResponseHeadersView headers={response.headers} />
+      )}
     </div>
   );
 };
