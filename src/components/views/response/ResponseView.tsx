@@ -22,6 +22,10 @@ export const ResponseView = (props: ResponseViewProps) => {
 const ResponseContent = ({ response, requestError }: ResponseViewProps) => {
   const [responseView, setResponseView] = useState<ResponseViewPane>("raw");
 
+  if (requestError) {
+    return <p>{requestError}</p>;
+  }
+
   if (!response) {
     return <p>Send a request!</p>;
   }
