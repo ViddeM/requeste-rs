@@ -4,6 +4,7 @@ import { BodyTypes } from "@/types/request";
 import styles from "./RequestBodyView.module.scss";
 import { Key, useState } from "react";
 import { Button } from "@/components/elements/button/Button";
+import { useRequest } from "@/hooks/useRequest";
 
 const ALL_BODY_TYPES: BodyTypes[] = [
   BodyTypes.Json,
@@ -12,9 +13,13 @@ const ALL_BODY_TYPES: BodyTypes[] = [
 ];
 
 export const RequestBodyView = () => {
-  const [json, setJson] = useState<string>("");
+  const {
+    request: { body },
+    setBody,
+  } = useRequest();
+
   const [jsonParseError, setJsonParseError] = useState<string | null>(null);
-  const rowCount = json.split("\n").length;
+  const rowCount = body.split("\n").length;
 
   return (
     <div className={styles.requestBodyViewContainer}>
@@ -30,7 +35,7 @@ export const RequestBodyView = () => {
         />
         <Button
           className={styles.formatCodeButton}
-          onClick={() => setJson(formatJson(json, setJsonParseError))}
+          onClick={() => setBody(formatJson(body, setJsonParseError))}
         >
           Format JSON
         </Button>
@@ -47,9 +52,9 @@ export const RequestBodyView = () => {
         <div className={styles.divider} />
         <TextArea
           className={styles.codeTextArea}
-          value={json}
+          value={body}
           rows={1}
-          onChange={(e) => setJson(e.target.value)}
+          onChange={(e) => setBody(e.target.value)}
         />
       </div>
     </div>

@@ -1,19 +1,13 @@
 import React, { useContext } from "react";
-import { ResponseContextData } from "./useResponse";
-import { Header, Method } from "@/types/request";
+import { Header, Method, Request } from "@/types/request";
 
 export interface RequestContextData {
-  request: RequestInfo;
+  request: Request;
   setUrl: (url: string) => void;
   setMethod: (method: Method) => void;
+  setBody: (body: string) => void;
   setHeaders: (headers: Header[]) => void;
   sendRequest: () => void;
-}
-
-export interface RequestInfo {
-  url: string;
-  method: Method;
-  headers: Header[];
 }
 
 export const RequestContext = React.createContext<RequestContextData>({
@@ -21,12 +15,16 @@ export const RequestContext = React.createContext<RequestContextData>({
     url: "",
     method: Method.GET,
     headers: [],
+    body: "",
   },
   setUrl: () => {
     console.error("setUrl called default function, this should not happend");
   },
   setMethod: () => {
     console.error("setMethod called default function, this should not happend");
+  },
+  setBody: () => {
+    console.error("setBody called default function, this should not happend");
   },
   setHeaders: () => {
     console.error(

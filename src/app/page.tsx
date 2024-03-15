@@ -3,10 +3,9 @@
 import { useState } from "react";
 import styles from "./page.module.scss";
 import { ResponseView } from "@/components/views/response/ResponseView";
-import { Response } from "@/types/response";
 import { RequestView } from "@/components/views/request/RequestView";
 import { MenubarView } from "@/components/views/menubar/MenubarView";
-import { RequestContext, RequestInfo } from "@/hooks/useRequest";
+import { RequestContext } from "@/hooks/useRequest";
 import { ResponseContext, ResponseContextData } from "@/hooks/useResponse";
 import { invoke } from "@tauri-apps/api";
 import { Header, Method, Request } from "@/types/request";
@@ -15,6 +14,7 @@ import { RequestTrace } from "@/types/requestTrace";
 export default function Home() {
   const [url, setUrl] = useState<string>("");
   const [method, setMethod] = useState<Method>(Method.GET);
+  const [body, setBody] = useState<string>("");
   const [headers, setHeaders] = useState<Header[]>([]);
   const [response, setResponse] = useState<RequestTrace | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -23,6 +23,7 @@ export default function Home() {
   const requestInfo: Request = {
     url: url,
     method: method,
+    body: body,
     headers: headers,
   };
 
@@ -41,6 +42,7 @@ export default function Home() {
         request: requestInfo,
         setUrl: setUrl,
         setMethod: setMethod,
+        setBody: setBody,
         setHeaders: setHeaders,
         sendRequest: () => sendRequest(requestInfo, responseContext),
       }}
@@ -57,7 +59,7 @@ export default function Home() {
 }
 
 async function sendRequest(
-  request: RequestInfo,
+  request: Request,
   { setAwaitingResponse, setResponse, setRequestError }: ResponseContextData
 ) {
   setAwaitingResponse(true);
@@ -65,6 +67,7 @@ async function sendRequest(
     request: {
       url: request.url,
       method: request.method,
+      body: request.body,
       headers: request.headers.filter((h) => h.name !== ""),
     },
   })

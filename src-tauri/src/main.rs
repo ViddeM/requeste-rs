@@ -5,66 +5,15 @@ use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue},
     Client,
 };
-use serde::{Deserialize, Serialize};
+use types::{header::Header, request::Request, request_trace::RequestTrace, response::Response};
+
+pub mod types;
 
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![send_request])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "UPPERCASE")]
-enum Method {
-    Get,
-    Post,
-    Put,
-    Delete,
-    Options,
-    Head,
-}
-
-impl From<Method> for reqwest::Method {
-    fn from(m: Method) -> Self {
-        match m {
-            Method::Get => reqwest::Method::GET,
-            Method::Post => reqwest::Method::POST,
-            Method::Put => reqwest::Method::PUT,
-            Method::Delete => reqwest::Method::DELETE,
-            Method::Options => reqwest::Method::OPTIONS,
-            Method::Head => reqwest::Method::HEAD,
-        }
-    }
-}
-
-#[derive(Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct Request {
-    url: String,
-    method: Method,
-    headers: Vec<Header>,
-}
-
-#[derive(Deserialize, Serialize)]
-struct Header {
-    name: String,
-    value: String,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct RequestTrace {
-    request: Request,
-    response: Response,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct Response {
-    status: u16,
-    headers: Vec<Header>,
-    body_string: String,
 }
 
 #[tauri::command]
@@ -89,10 +38,29 @@ async fn send_request(request: Request) -> Result<RequestTrace, String> {
         })
         .collect::<Result<HeaderMap, String>>()?;
 
-    let response = client
+    let mut request_builder = client
         .request(request.method.clone().into(), request.url.clone())
-        .headers(header_map)
-        .send()
+        .headers(header_map);
+    println!("__{request_builder:?}");
+
+    if !request.body.is_empty() {
+        // TODO:
+        request_builder = request_builder.body(request.body);
+        println!("<>{request_builder:?}");
+    }
+
+    let request = request_builder
+        .build()
+        .map_err(|err| format!("Failed to build request, err: {err:?}"))?;
+
+    println!("REQUEST : {request:?}");
+
+    let response = client
+        .execute(
+            request
+                .try_clone()
+                .ok_or(format!("Failed to clone actual_request"))?,
+        )
         .await
         .map_err(|e| e.to_string())?;
 
@@ -100,9 +68,11 @@ async fn send_request(request: Request) -> Result<RequestTrace, String> {
     let headers = response
         .headers()
         .iter()
-        .map(map_header)
+        .map(|h| h.try_into())
         .collect::<Result<Vec<Header>, String>>()?;
     let response_body = response.text().await.map_err(|e| e.to_string())?;
+
+    let request = request.try_into()?;
 
     let response = Response {
         status: response_status,
@@ -111,15 +81,4 @@ async fn send_request(request: Request) -> Result<RequestTrace, String> {
     };
 
     Ok(RequestTrace { request, response })
-}
-
-fn map_header((name, val): (&HeaderName, &HeaderValue)) -> Result<Header, String> {
-    let value = val
-        .to_str()
-        .map_err(|err| format!("Failed to convert header value to string, err: {err:?}"))?;
-
-    Ok(Header {
-        name: name.to_string(),
-        value: value.to_string(),
-    })
 }
