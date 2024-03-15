@@ -1,23 +1,37 @@
 import { Method } from "@/types/request";
 import styles from "./MenubarView.module.scss";
 import { ButtonBase } from "@/components/elements/button/Button";
+import { RequestInfo, useRequest } from "@/hooks/useRequest";
 
 interface RequestPreview {
   id: number;
   name: string;
-  method: Method;
+  request: RequestInfo;
 }
 
 const REQUESTS_TMP: RequestPreview[] = [
   {
     id: 0,
     name: "Get google",
-    method: Method.GET,
+    request: {
+      url: "https://google.com",
+      method: Method.GET,
+      headers: [],
+    },
   },
   {
     id: 1,
-    name: "Post google",
-    method: Method.POST,
+    name: "Post facebook",
+    request: {
+      url: "https://facebook.com",
+      method: Method.POST,
+      headers: [
+        {
+          name: "Content-Length",
+          value: "240",
+        },
+      ],
+    },
   },
 ];
 
@@ -35,9 +49,18 @@ export const MenubarView = () => {
 };
 
 const RequestItem = ({ request }: { request: RequestPreview }) => {
+  const { setUrl, setHeaders, setMethod } = useRequest();
+
   return (
-    <ButtonBase className={styles.requestItem}>
-      <span>{request.method}</span>
+    <ButtonBase
+      className={styles.requestItem}
+      onClick={() => {
+        setUrl(request.request.url);
+        setHeaders(request.request.headers);
+        setMethod(request.request.method);
+      }}
+    >
+      <span>{request.request.method}</span>
       <h4>{request.name}</h4>
     </ButtonBase>
   );
