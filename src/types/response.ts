@@ -1,5 +1,7 @@
+import { Header } from "./request";
+
 export interface Response {
   status: number;
-  headers: Object;
+  headers: Header[];
   bodyString: string;
 }

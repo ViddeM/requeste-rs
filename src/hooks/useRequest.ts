@@ -33,7 +33,9 @@ export const RequestContext = React.createContext<RequestContextData>({
       "setHeaders called default function, this should not happend"
     );
   },
-  sendRequest: () => [console.error("Send request called default function!")],
+  sendRequest: () => {
+    console.error("Send request called default function!");
+  },
 });
 
 export const useRequest = (): RequestContextData => {

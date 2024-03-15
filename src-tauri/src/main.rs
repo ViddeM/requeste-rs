@@ -1,8 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::collections::HashMap;
-
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue},
     Client,
@@ -16,7 +14,7 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "UPPERCASE")]
 enum Method {
     Get,
@@ -40,14 +38,15 @@ impl From<Method> for reqwest::Method {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct Request {
     url: String,
     method: Method,
     headers: Vec<Header>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 struct Header {
     name: String,
     value: String,
@@ -55,19 +54,26 @@ struct Header {
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
+struct RequestTrace {
+    request: Request,
+    response: Response,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 struct Response {
     status: u16,
-    headers: HashMap<String, String>,
+    headers: Vec<Header>,
     body_string: String,
 }
 
 #[tauri::command]
-async fn send_request(request: Request) -> Result<Response, String> {
+async fn send_request(request: Request) -> Result<RequestTrace, String> {
     let client = Client::new();
 
     let header_map: HeaderMap = request
         .headers
-        .into_iter()
+        .iter()
         .map(|h| {
             (
                 HeaderName::from_lowercase(h.name.to_lowercase().as_bytes())
@@ -84,7 +90,7 @@ async fn send_request(request: Request) -> Result<Response, String> {
         .collect::<Result<HeaderMap, String>>()?;
 
     let response = client
-        .request(request.method.into(), request.url)
+        .request(request.method.clone().into(), request.url.clone())
         .headers(header_map)
         .send()
         .await
@@ -95,21 +101,25 @@ async fn send_request(request: Request) -> Result<Response, String> {
         .headers()
         .iter()
         .map(map_header)
-        .collect::<Result<HashMap<String, String>, String>>()?;
+        .collect::<Result<Vec<Header>, String>>()?;
     let response_body = response.text().await.map_err(|e| e.to_string())?;
 
-    Ok(Response {
+    let response = Response {
         status: response_status,
         headers,
         body_string: response_body,
-    })
+    };
+
+    Ok(RequestTrace { request, response })
 }
 
-fn map_header((name, val): (&HeaderName, &HeaderValue)) -> Result<(String, String), String> {
-    match val.to_str() {
-        Ok(v) => Ok((name.as_str().into(), v.into())),
-        Err(e) => Err(format!(
-            "Failed to convert header value to string, err: {e:?}"
-        )),
-    }
+fn map_header((name, val): (&HeaderName, &HeaderValue)) -> Result<Header, String> {
+    let value = val
+        .to_str()
+        .map_err(|err| format!("Failed to convert header value to string, err: {err:?}"))?;
+
+    Ok(Header {
+        name: name.to_string(),
+        value: value.to_string(),
+    })
 }

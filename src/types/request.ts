@@ -17,3 +17,9 @@ export enum BodyTypes {
   XML = "XML",
   Text = "Text",
 }
+
+export interface Request {
+  url: string;
+  method: Method;
+  headers: Header[];
+}

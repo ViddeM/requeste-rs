@@ -2,9 +2,17 @@ import styles from "./ResponseView.module.scss";
 import { useState } from "react";
 import { Tabs } from "@/components/elements/tabs/Tabs";
 import { useResponse } from "@/hooks/useResponse";
+import { RequestTrace } from "@/types/requestTrace";
+import { Header, Request } from "@/types/request";
+import { Response } from "@/types/response";
 
-type ResponseViewPane = "raw" | "preview" | "headers";
-const ALL_RESPONSE_VIEWS: ResponseViewPane[] = ["raw", "preview", "headers"];
+type ResponseViewPane = "raw" | "preview" | "headers" | "trace";
+const ALL_RESPONSE_VIEWS: ResponseViewPane[] = [
+  "raw",
+  "preview",
+  "headers",
+  "trace",
+];
 
 export const ResponseView = () => {
   return (
@@ -30,10 +38,12 @@ const ResponseContent = () => {
     return <p>Send a request!</p>;
   }
 
+  const resp = response.response;
+
   return (
     <>
       {requestError && <p> Error: {requestError}</p>}
-      <div className={styles.responseHeader}>{response.status}</div>
+      <div className={styles.responseHeader}>{resp.status}</div>
       <Tabs
         values={ALL_RESPONSE_VIEWS}
         activeTab={responseView}
@@ -43,11 +53,13 @@ const ResponseContent = () => {
       />
 
       {responseView === "raw" ? (
-        <RawResponseView bodyString={response.bodyString} />
+        <RawResponseView bodyString={resp.bodyString} />
       ) : responseView === "preview" ? (
-        <PreviewResponseView bodyString={response.bodyString} />
+        <PreviewResponseView bodyString={resp.bodyString} />
+      ) : responseView === "headers" ? (
+        <ResponseHeadersView headers={resp.headers} />
       ) : (
-        <ResponseHeadersView headers={response.headers} />
+        <ResponseTraceView trace={response} />
       )}
     </>
   );
@@ -70,7 +82,7 @@ const PreviewResponseView = ({ bodyString }: DisplayResponseViewProps) => {
 };
 
 interface ResponseHeadersViewProps {
-  headers: Object;
+  headers: Header[];
 }
 
 const ResponseHeadersView = ({ headers }: ResponseHeadersViewProps) => {
@@ -83,13 +95,50 @@ const ResponseHeadersView = ({ headers }: ResponseHeadersViewProps) => {
         </tr>
       </thead>
       <tbody>
-        {Object.entries(headers).map(([key, val]) => (
-          <tr key={key}>
-            <td align="left">{key}:</td>
-            <td align="left">{val}</td>
+        {headers.map((h) => (
+          <tr key={h.name}>
+            <td align="left">{h.name}:</td>
+            <td align="left">{h.value}</td>
           </tr>
         ))}
       </tbody>
     </table>
   );
 };
+
+interface ResponseTraceViewProps {
+  trace: RequestTrace;
+}
+
+const ResponseTraceView = ({ trace }: ResponseTraceViewProps) => {
+  return (
+    <div className={styles.codeBlock}>
+      <code>
+        {requestToLines(trace.request).map((l) => (
+          <p>{l}</p>
+        ))}
+        <br />
+        <p>{"<====>"}</p>
+        <br />
+        {responseToLines(trace.response).map((l) => (
+          <p>{l}</p>
+        ))}
+      </code>
+    </div>
+  );
+};
+
+function requestToLines(request: Request): string[] {
+  const urlLine = `${request.method} ${request.url}`;
+  const headerLines = request.headers.map(
+    (h) => `HEADER::${h.name}: ${h.value}`
+  );
+
+  return [urlLine].concat(headerLines).map((s) => `> ${s}`);
+}
+
+function responseToLines(response: Response): string[] {
+  return [`Response: ${response.status}`]
+    .concat(response.headers.map((h) => `HEADER::${h.name}: ${h.value}`))
+    .map((s) => `< ${s}`);
+}

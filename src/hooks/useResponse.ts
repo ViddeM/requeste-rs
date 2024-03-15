@@ -1,12 +1,12 @@
 import React from "react";
 import { useContext } from "react";
-import { Response } from "../types/response";
+import { RequestTrace } from "@/types/requestTrace";
 
 export interface ResponseContextData {
-  response: Response | null;
+  response: RequestTrace | null;
   requestError: string | null;
   awaitingResponse: boolean;
-  setResponse: (resp: Response | null) => void;
+  setResponse: (resp: RequestTrace | null) => void;
   setRequestError: (error: string | null) => void;
   setAwaitingResponse: (awaiting: boolean) => void;
 }
@@ -28,5 +28,5 @@ export const ResponseContext = React.createContext<ResponseContextData>({
 
 export const useResponse = (): ResponseContextData => {
   const ctx = useContext(ResponseContext);
-  return ctx;
+  return { ...ctx };
 };

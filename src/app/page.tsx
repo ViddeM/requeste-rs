@@ -9,17 +9,18 @@ import { MenubarView } from "@/components/views/menubar/MenubarView";
 import { RequestContext, RequestInfo } from "@/hooks/useRequest";
 import { ResponseContext, ResponseContextData } from "@/hooks/useResponse";
 import { invoke } from "@tauri-apps/api";
-import { Header, Method } from "@/types/request";
+import { Header, Method, Request } from "@/types/request";
+import { RequestTrace } from "@/types/requestTrace";
 
 export default function Home() {
   const [url, setUrl] = useState<string>("");
   const [method, setMethod] = useState<Method>(Method.GET);
   const [headers, setHeaders] = useState<Header[]>([]);
-  const [response, setResponse] = useState<Response | null>(null);
+  const [response, setResponse] = useState<RequestTrace | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
   const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
 
-  const requestInfo = {
+  const requestInfo: Request = {
     url: url,
     method: method,
     headers: headers,
@@ -70,7 +71,7 @@ async function sendRequest(
     .then((resp) => {
       console.log("Success resp", resp);
       setRequestError(null);
-      setResponse(resp as Response);
+      setResponse(resp as RequestTrace);
     })
     .catch((err) => {
       console.log("Error resp", err);
