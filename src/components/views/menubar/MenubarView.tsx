@@ -1,12 +1,13 @@
 import { Method } from "@/types/request";
 import styles from "./MenubarView.module.scss";
 import { ButtonBase } from "@/components/elements/button/Button";
-import { RequestInfo, useRequest } from "@/hooks/useRequest";
+import { useRequest } from "@/hooks/useRequest";
+import { Request } from "@/types/request";
 
 interface RequestPreview {
   id: number;
   name: string;
-  request: RequestInfo;
+  request: Request;
 }
 
 const REQUESTS_TMP: RequestPreview[] = [
@@ -17,6 +18,7 @@ const REQUESTS_TMP: RequestPreview[] = [
       url: "https://google.com",
       method: Method.GET,
       headers: [],
+      body: "",
     },
   },
   {
@@ -31,6 +33,7 @@ const REQUESTS_TMP: RequestPreview[] = [
           value: "240",
         },
       ],
+      body: "",
     },
   },
 ];
