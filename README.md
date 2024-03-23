@@ -72,6 +72,6 @@ Statuses:
  - 🏗️ Sidepanel with requests listings
    - ✅ List of template http requests that can be reused
    - ❌ Store the current request to the list (and store to file)
-   - ❌ Load from file
+ - ❌ Load from file
  - ❌ Multiple "projects"
  - ❌ Store data between requests, e.g. making one request, switching to another and then switching back should still show the previous response for that request.
