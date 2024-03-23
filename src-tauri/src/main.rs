@@ -2,14 +2,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use eyre::{Context, OptionExt};
-use http::uri::Scheme;
 use http_body_util::{BodyExt, Empty};
 use hyper::body::Bytes;
-use hyper_util::{
-    client::legacy::Client,
-    rt::{TokioExecutor, TokioIo},
-};
-use tokio::net::TcpStream;
+use hyper_util::{client::legacy::Client, rt::TokioExecutor};
 use types::{request::Request, request_trace::RequestTrace, response::Response};
 
 pub mod types;
@@ -31,20 +26,6 @@ async fn send_request(request: Request) -> Result<RequestTrace, String> {
 
 async fn make_request(request: Request) -> eyre::Result<RequestTrace> {
     let url = request.url.parse::<hyper::Uri>()?;
-
-    let scheme = url.scheme().unwrap_or(&Scheme::HTTPS);
-    let host = url.host().ok_or_eyre("No host in url?")?;
-    let port = if let Some(port) = url.port_u16() {
-        port
-    } else {
-        port_for_scheme(scheme)?
-    };
-
-    let address = format!("{}:{}", host, port);
-
-    let stream = TcpStream::connect(address).await?;
-
-    let io = TokioIo::new(stream);
 
     let authority = url.authority().ok_or_eyre("Missing authority?")?.clone();
 
@@ -70,6 +51,7 @@ async fn make_request(request: Request) -> eyre::Result<RequestTrace> {
         .wrap_err("Failed to read local certificates store for TLS")?
         .https_or_http()
         .enable_http1()
+        .enable_http2()
         .build();
 
     let client: Client<_, Empty<Bytes>> = Client::builder(TokioExecutor::new()).build(https);
@@ -97,16 +79,4 @@ async fn make_request(request: Request) -> eyre::Result<RequestTrace> {
         request: req.try_into().wrap_err("Failed to parse sent request")?,
         response: resp,
     })
-}
-
-fn port_for_scheme(scheme: &Scheme) -> eyre::Result<u16> {
-    if scheme == &Scheme::HTTP {
-        return Ok(80);
-    }
-
-    if scheme == &Scheme::HTTPS {
-        return Ok(443);
-    }
-
-    eyre::bail!("Unsupported scheme encountered {scheme}")
 }
