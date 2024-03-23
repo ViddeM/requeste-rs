@@ -18,7 +18,14 @@ tauri-build = { version = "1.5", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.6", features = [] }
-reqwest = { version = "0.11", features = ["serde_json"] }
+tokio = { version = "1.36", features = ["full"] }
+http-body-util = "0.1"
+hyper = { version = "1.2", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+hyper-rustls = "0.26"
+eyre = "0.6"
+http = "1.1"
+log = "0.4"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

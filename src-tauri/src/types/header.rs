@@ -1,4 +1,4 @@
-use reqwest::header::{HeaderName, HeaderValue};
+use http::{HeaderName, HeaderValue};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -7,18 +7,13 @@ pub struct Header {
     pub value: String,
 }
 
-impl TryInto<Header> for (&HeaderName, &HeaderValue) {
-    type Error = String;
+impl TryFrom<(&HeaderName, &HeaderValue)> for Header {
+    type Error = eyre::Report;
 
-    fn try_into(self) -> Result<Header, Self::Error> {
-        let (name, val) = self;
-        let value = val
-            .to_str()
-            .map_err(|err| format!("Failed to convert header value to string, err: {err:?}"))?;
-
-        Ok(Header {
+    fn try_from((name, value): (&HeaderName, &HeaderValue)) -> Result<Self, Self::Error> {
+        Ok(Self {
             name: name.to_string(),
-            value: value.to_string(),
+            value: value.to_str()?.to_string(),
         })
     }
 }

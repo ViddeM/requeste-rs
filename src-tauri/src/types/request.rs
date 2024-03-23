@@ -1,3 +1,5 @@
+use http_body_util::Empty;
+use hyper::body::Bytes;
 use serde::{Deserialize, Serialize};
 
 use super::{header::Header, method::Method};
@@ -7,33 +9,23 @@ use super::{header::Header, method::Method};
 pub struct Request {
     pub url: String,
     pub method: Method,
-    pub body: String,
+    pub body: Option<String>,
     pub headers: Vec<Header>,
 }
 
-impl TryFrom<reqwest::Request> for Request {
-    type Error = String;
+impl TryFrom<hyper::Request<Empty<Bytes>>> for Request {
+    type Error = eyre::Report;
 
-    fn try_from(value: reqwest::Request) -> Result<Self, Self::Error> {
-        let headers = value
-            .headers()
-            .iter()
-            .map(|h| h.try_into())
-            .collect::<Result<Vec<Header>, Self::Error>>()?;
-        let body = match value.body() {
-            Some(s) => {
-                let bytes = s.as_bytes().ok_or("Failed to read bytes from body")?;
-                String::from_utf8(bytes.to_vec())
-                    .map_err(|err| format!("Failed to map body to utf8, err: {err:?}"))?
-            }
-            None => "".to_string(),
-        };
-
+    fn try_from(value: hyper::Request<Empty<Bytes>>) -> Result<Self, Self::Error> {
         Ok(Self {
-            url: value.url().to_string(),
-            method: value.method().clone().into(),
-            body,
-            headers,
+            url: value.uri().to_string(),
+            method: value.method().clone().try_into()?,
+            body: None,
+            headers: value
+                .headers()
+                .into_iter()
+                .map(|h| h.try_into())
+                .collect::<eyre::Result<Vec<Header>>>()?,
         })
     }
 }

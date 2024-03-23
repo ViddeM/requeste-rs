@@ -10,39 +10,62 @@ pub enum Method {
     Options,
     Head,
     Trace,
-    Connect,
     Patch,
 }
 
-impl Into<reqwest::Method> for Method {
-    fn into(self) -> reqwest::Method {
-        match self {
-            Method::Get => reqwest::Method::GET,
-            Method::Post => reqwest::Method::POST,
-            Method::Put => reqwest::Method::PUT,
-            Method::Delete => reqwest::Method::DELETE,
-            Method::Options => reqwest::Method::OPTIONS,
-            Method::Head => reqwest::Method::HEAD,
-            Method::Trace => reqwest::Method::TRACE,
-            Method::Connect => reqwest::Method::CONNECT,
-            Method::Patch => reqwest::Method::PATCH,
+impl From<Method> for String {
+    fn from(value: Method) -> Self {
+        match value {
+            Method::Get => "GET",
+            Method::Post => "POST",
+            Method::Put => "PUT",
+            Method::Delete => "DELETE",
+            Method::Options => "OPTIONS",
+            Method::Head => "HEAD",
+            Method::Trace => "TRACE",
+            Method::Patch => "PATCH",
         }
+        .to_string()
     }
 }
 
-impl Into<Method> for reqwest::Method {
-    fn into(self) -> Method {
-        match self {
-            reqwest::Method::GET => Method::Get,
-            reqwest::Method::POST => Method::Post,
-            reqwest::Method::PUT => Method::Put,
-            reqwest::Method::DELETE => Method::Delete,
-            reqwest::Method::OPTIONS => Method::Options,
-            reqwest::Method::HEAD => Method::Head,
-            reqwest::Method::TRACE => Method::Trace,
-            reqwest::Method::CONNECT => Method::Connect,
-            reqwest::Method::PATCH => Method::Patch,
-            method => panic!("Got unexpected reqwest method {method:?}"),
+impl TryFrom<String> for Method {
+    type Error = eyre::Report;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Ok(match value.as_str() {
+            "GET" => Method::Get,
+            "POST" => Method::Post,
+            "PUT" => Method::Put,
+            "DELETE" => Method::Delete,
+            "OPTIONS" => Method::Options,
+            "HEAD" => Method::Head,
+            "TRACE" => Method::Trace,
+            "PATCH" => Method::Patch,
+            method => eyre::bail!("Unsupported method {method}"),
+        })
+    }
+}
+
+impl TryFrom<http::Method> for Method {
+    type Error = eyre::Report;
+
+    fn try_from(value: http::Method) -> Result<Self, Self::Error> {
+        value.to_string().try_into()
+    }
+}
+
+impl From<Method> for http::Method {
+    fn from(value: Method) -> Self {
+        match value {
+            Method::Get => http::Method::GET,
+            Method::Post => http::Method::POST,
+            Method::Put => http::Method::PUT,
+            Method::Delete => http::Method::DELETE,
+            Method::Options => http::Method::OPTIONS,
+            Method::Head => http::Method::HEAD,
+            Method::Trace => http::Method::TRACE,
+            Method::Patch => http::Method::PATCH,
         }
     }
 }

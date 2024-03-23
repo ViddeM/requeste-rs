@@ -1,11 +1,16 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use reqwest::{
-    header::{HeaderMap, HeaderName, HeaderValue},
-    Client,
+use eyre::{Context, OptionExt};
+use http::uri::Scheme;
+use http_body_util::{BodyExt, Empty};
+use hyper::body::Bytes;
+use hyper_util::{
+    client::legacy::Client,
+    rt::{TokioExecutor, TokioIo},
 };
-use types::{header::Header, request::Request, request_trace::RequestTrace, response::Response};
+use tokio::net::TcpStream;
+use types::{request::Request, request_trace::RequestTrace, response::Response};
 
 pub mod types;
 
@@ -18,67 +23,90 @@ fn main() {
 
 #[tauri::command]
 async fn send_request(request: Request) -> Result<RequestTrace, String> {
-    let client = Client::new();
-
-    let header_map: HeaderMap = request
-        .headers
-        .iter()
-        .map(|h| {
-            (
-                HeaderName::from_lowercase(h.name.to_lowercase().as_bytes())
-                    .map_err(|e| format!("Invalid header name, err: {e:?}")),
-                HeaderValue::from_str(h.value.as_str())
-                    .map_err(|e| format!("Invalid header value, err: {e:?}")),
-            )
-        })
-        .map(|h| match h {
-            (Ok(n), Ok(v)) => Ok((n, v)),
-            (Err(e), _) => Err(e),
-            (_, Err(e)) => Err(e),
-        })
-        .collect::<Result<HeaderMap, String>>()?;
-
-    let mut request_builder = client
-        .request(request.method.clone().into(), request.url.clone())
-        .headers(header_map);
-    println!("__{request_builder:?}");
-
-    if !request.body.is_empty() {
-        // TODO:
-        request_builder = request_builder.body(request.body);
-        println!("<>{request_builder:?}");
+    match make_request(request).await {
+        Ok(trace) => Ok(trace),
+        Err(err) => Err(format!("Failed to make request, err: {err:?}")),
     }
+}
 
-    let request = request_builder
-        .build()
-        .map_err(|err| format!("Failed to build request, err: {err:?}"))?;
+async fn make_request(request: Request) -> eyre::Result<RequestTrace> {
+    let url = request.url.parse::<hyper::Uri>()?;
 
-    println!("REQUEST : {request:?}");
-
-    let response = client
-        .execute(
-            request
-                .try_clone()
-                .ok_or(format!("Failed to clone actual_request"))?,
-        )
-        .await
-        .map_err(|e| e.to_string())?;
-
-    let response_status = response.status().as_u16();
-    let headers = response
-        .headers()
-        .iter()
-        .map(|h| h.try_into())
-        .collect::<Result<Vec<Header>, String>>()?;
-    let response_body = response.text().await.map_err(|e| e.to_string())?;
-
-    let request = request.try_into()?;
-
-    let response = Response {
-        status: response_status,
-        headers,
-        body_string: response_body,
+    let scheme = url.scheme().unwrap_or(&Scheme::HTTPS);
+    let host = url.host().ok_or_eyre("No host in url?")?;
+    let port = if let Some(port) = url.port_u16() {
+        port
+    } else {
+        port_for_scheme(scheme)?
     };
 
-    Ok(RequestTrace { request, response })
+    let address = format!("{}:{}", host, port);
+
+    let stream = TcpStream::connect(address).await?;
+
+    let io = TokioIo::new(stream);
+
+    let authority = url.authority().ok_or_eyre("Missing authority?")?.clone();
+
+    let mut req = hyper::Request::builder()
+        .uri(url)
+        .method(request.method)
+        // TODO: Handle default headers. (request-size, accept, host, user-agent)
+        .header(hyper::header::HOST, authority.as_str());
+
+    for header in request.headers.into_iter() {
+        req = req.header(header.name, header.value);
+    }
+
+    let req = if let Some(_body) = request.body {
+        // TODO: Support request body
+        req.body(Empty::<Bytes>::new())?
+    } else {
+        req.body(Empty::<Bytes>::new())?
+    };
+
+    let https = hyper_rustls::HttpsConnectorBuilder::new()
+        .with_native_roots()
+        .wrap_err("Failed to read local certificates store for TLS")?
+        .https_or_http()
+        .enable_http1()
+        .build();
+
+    let client: Client<_, Empty<Bytes>> = Client::builder(TokioExecutor::new()).build(https);
+
+    let response = client
+        .request(req.clone())
+        .await
+        .wrap_err("Failed to send request")?;
+
+    let mut resp = Response::base_from_response(&response)?;
+
+    let body = String::from_utf8_lossy(
+        &response
+            .into_body()
+            .collect()
+            .await
+            .wrap_err("Could not get body")?
+            .to_bytes(),
+    )
+    .to_string();
+
+    resp.with_body(body);
+
+    Ok(RequestTrace {
+        request: req.try_into().wrap_err("Failed to parse sent request")?,
+        response: resp,
+    })
+}
+
+fn port_for_scheme(scheme: &Scheme) -> eyre::Result<u16> {
+    if scheme == &Scheme::HTTP {
+        return Ok(80);
+    }
+
+    if scheme == &Scheme::HTTPS {
+        return Ok(443);
+    }
+
+    eyre::bail!("Unsupported scheme encountered {scheme}")
 }

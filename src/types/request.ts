@@ -21,6 +21,6 @@ export enum BodyTypes {
 export interface Request {
   url: string;
   method: Method;
-  body: string;
+  body: string | null;
   headers: Header[];
 }
