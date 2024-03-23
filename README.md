@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Requeste-RS
+Requesters is a request testing application inspired by insomnia and postman built with Tauri and NextJS.
 
-## Getting Started
+## Development
+These are the steps necessary to develop on this application
 
-First, run the development server:
+### Setup
+To run the application you first need to install all dependencies: 
+For the frontend, run `yarn` in the root directory of the application to install all nextjs dependencies.
+For the backend, run `cargo build` in the `src-tauri/` directory of the application.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+For tauri you will also need to install the tauri CLI by running `cargo install tauri-cli`, please refer to the [tauri-website](https://tauri.app/) for information regarding other system dependencies that are required to run tauri. 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running development
+To run & watch the files, run `cargo tauri dev` in the root directory of the project.
+Please note that changes to the frontend (`src/` directory) should hot-reload in the application window. 
+However, any changes to the backend (`src-tauri/` directory) will lead to the application restarting.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Features / TODO
+A list of features and their status in the project. 
+Statuses:
+ - ❌ Not started
+ - 🏗️ Partially implemented
+ - 🍑 Implemented in backend
+ - 🍏 Implemented in frontend
+ - ✅ Done!
 
-## Learn More
+### Sending requests
+ - ✅ HTTP Methods:
+   - ✅ GET
+   - ✅ POST
+   - ✅ PUT
+   - ✅ DELETE
+   - ✅ OPTION
+   - ✅ HEAD
+ - 🏗️ Headers
+   - ✅ User can specify custom headers
+   - ❌ Default headers, should be used iff the user haven't specified anything for that header.
+     - ❌ User-agent
+     - ❌ Accept
+     - ❌ Content-Type
+     - ❌ Content-Length
+ - 🏗️ Request Body
+   - 🍏 JSON 
+   - ❌ XML
+   - ❌ Multi-part-form
+   - ❌ Plain
+ - ❌ Websockets
+ - ❌ GraphQL
+ - ❌ Handle redirects
 
-To learn more about Next.js, take a look at the following resources:
+### Viewing sent requests
+ - 🏗️ Trace of request
+   - ✅ See sent/received headers
+   - ❌ See sent/received body
+   - ❌ See certificate handling
+   - ❌ See multiple requests/responses
+   - ❌ Color code requests/responses
+   - ❌ See "trace" specific detailed information
+ - ✅ Raw response body
+   - ✅ See stringified body
+ - ✅ Headers
+   - ✅ See response headers
+ - 🏗️ Preview
+   - 🏗️ HTML response
+     - ✅ Basic html view in iframe
+     - ❌ Support images
+     - ❌ load css?
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Store requests
+ - 🏗️ Sidepanel with requests listings
+   - ✅ List of template http requests that can be reused
+   - ❌ Store the current request to the list (and store to file)
+   - ❌ Load from file
+ - ❌ Multiple "projects"
+ - ❌ Store data between requests, e.g. making one request, switching to another and then switching back should still show the previous response for that request.
