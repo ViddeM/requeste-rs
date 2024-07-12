@@ -19,7 +19,8 @@ export const RequestBodyView = () => {
   } = useRequest();
 
   const [jsonParseError, setJsonParseError] = useState<string | null>(null);
-  const rowCount = body.split("\n").length;
+
+  const rowCount = body?.split("\n").length;
 
   return (
     <div className={styles.requestBodyViewContainer}>
@@ -35,7 +36,8 @@ export const RequestBodyView = () => {
         />
         <Button
           className={styles.formatCodeButton}
-          onClick={() => setBody(formatJson(body, setJsonParseError))}
+          disabled={body === null}
+          onClick={() => setBody(formatJson(body!!, setJsonParseError))}
         >
           Format JSON
         </Button>
@@ -52,7 +54,7 @@ export const RequestBodyView = () => {
         <div className={styles.divider} />
         <TextArea
           className={styles.codeTextArea}
-          value={body}
+          value={body ?? ""}
           rows={1}
           onChange={(e) => setBody(e.target.value)}
         />

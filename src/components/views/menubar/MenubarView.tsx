@@ -6,16 +6,15 @@ import { Request } from "@/types/request";
 import { useState } from "react";
 
 interface RequestPreview {
-  id: number;
   name: string;
   request: Request;
 }
 
 const REQUESTS_TMP: RequestPreview[] = [
   {
-    id: 0,
     name: "Get google",
     request: {
+      id: "0",
       url: "https://google.com",
       method: Method.GET,
       headers: [],
@@ -23,9 +22,9 @@ const REQUESTS_TMP: RequestPreview[] = [
     },
   },
   {
-    id: 1,
     name: "Post facebook",
     request: {
+      id: "1",
       url: "https://facebook.com",
       method: Method.POST,
       headers: [
@@ -45,9 +44,9 @@ export const MenubarView = () => {
 
   const defaultRequest = (): RequestPreview => {
     return {
-      id: savedRequests.length,
       name: "NEW",
       request: {
+        id: savedRequests.length.toString(),
         url: "",
         method: Method.GET,
         headers: [],
@@ -69,7 +68,7 @@ export const MenubarView = () => {
         </Button>
       </div>
       {savedRequests.map((req) => (
-        <RequestItem request={req} key={req.id} />
+        <RequestItem request={req} key={req.request.id} />
       ))}
     </div>
   );
@@ -87,9 +86,9 @@ const RequestItem = ({ request }: { request: RequestPreview }) => {
         setMethod(request.request.method);
       }}
     >
-      <span className={`color-method-${request.request.method.toLowerCase()}`}>
+      <h3 className={`color-method-${request.request.method.toLowerCase()}`}>
         {request.request.method}
-      </span>
+      </h3>
       <h4>{request.name}</h4>
     </ButtonBase>
   );
