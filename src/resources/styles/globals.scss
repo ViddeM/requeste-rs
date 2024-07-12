@@ -27,3 +27,35 @@ a {
 html {
   color-scheme: dark;
 }
+
+.column {
+  > button {
+    width: 100%;
+    border-bottom: 0;
+    border-right: 0;
+  }
+}
+
+.color-method-get {
+  color: $method-color-get;
+}
+
+.color-method-post {
+  color: $method-color-post;
+}
+
+.color-method-put {
+  color: $method-color-put;
+}
+
+.color-method-delete {
+  color: $method-color-delete;
+}
+
+.color-method-option {
+  color: $method-color-option;
+}
+
+.color-method-head {
+  color: $method-color-head;
+}

@@ -19,6 +19,7 @@ export enum BodyTypes {
 }
 
 export interface Request {
+  id: string;
   url: string;
   method: Method;
   body: string | null;

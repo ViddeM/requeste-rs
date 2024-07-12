@@ -12,6 +12,9 @@ import { Header, Method, Request } from "@/types/request";
 import { RequestTrace } from "@/types/requestTrace";
 
 export default function Home() {
+  const [requestId, setRequestId] = useState<string>("");
+  const [requests, setRequests] = useState<Request[]>([]);
+
   const [url, setUrl] = useState<string>("");
   const [method, setMethod] = useState<Method>(Method.GET);
   const [body, setBody] = useState<string>("");
@@ -21,6 +24,7 @@ export default function Home() {
   const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
 
   const requestInfo: Request = {
+    id: requestId,
     url: url,
     method: method,
     body: body,

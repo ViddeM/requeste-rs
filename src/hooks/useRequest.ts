@@ -12,24 +12,23 @@ export interface RequestContextData {
 
 export const RequestContext = React.createContext<RequestContextData>({
   request: {
+    id: "",
     url: "",
     method: Method.GET,
     headers: [],
     body: "",
   },
   setUrl: () => {
-    console.error("setUrl called default function, this should not happend");
+    console.error("setUrl called default function, this should not happen");
   },
   setMethod: () => {
-    console.error("setMethod called default function, this should not happend");
+    console.error("setMethod called default function, this should not happen");
   },
   setBody: () => {
-    console.error("setBody called default function, this should not happend");
+    console.error("setBody called default function, this should not happen");
   },
   setHeaders: () => {
-    console.error(
-      "setHeaders called default function, this should not happend"
-    );
+    console.error("setHeaders called default function, this should not happen");
   },
   sendRequest: () => {
     console.error("Send request called default function!");

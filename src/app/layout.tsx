@@ -5,8 +5,6 @@ import "../resources/styles/fira_code_propo.scss";
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { RequestContextData } from "@/hooks/useRequest";
-import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
