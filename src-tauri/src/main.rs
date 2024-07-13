@@ -17,23 +17,45 @@ fn main() {
 }
 
 #[tauri::command]
-async fn send_request(request: Request) -> Result<RequestTrace, String> {
-    match make_request(request).await {
-        Ok(trace) => Ok(trace),
-        Err(err) => Err(format!("Failed to make request, err: {err:?}")),
+async fn send_request(request: Request) -> RequestTrace {
+    let mut trace = RequestTrace::default();
+
+    if let Err(err) = make_request(request, &mut trace).await {
+        trace.add_error(err);
     }
+
+    trace
 }
 
-async fn make_request(request: Request) -> eyre::Result<RequestTrace> {
+const DEFAULT_USER_AGENT: &str = "Request-RS";
+const DEFAULT_ACCEPT: &str = "*/*";
+
+async fn make_request(request: Request, trace: &mut RequestTrace) -> eyre::Result<()> {
     let url = request.url.parse::<hyper::Uri>()?;
 
     let authority = url.authority().ok_or_eyre("Missing authority?")?.clone();
+    let user_agent = request
+        .headers
+        .iter()
+        .find(|h| {
+            h.name.as_str().to_lowercase() == hyper::header::USER_AGENT.as_str().to_lowercase()
+        })
+        .map(|h| h.value.as_str())
+        .unwrap_or(DEFAULT_USER_AGENT);
+    let accept = request
+        .headers
+        .iter()
+        .find(|h| h.name.as_str().to_lowercase() == hyper::header::ACCEPT.as_str().to_lowercase())
+        .map(|h| h.value.as_str())
+        .unwrap_or(DEFAULT_ACCEPT);
 
     let mut req = hyper::Request::builder()
         .uri(url)
         .method(request.method)
         // TODO: Handle default headers. (request-size, accept, host, user-agent)
-        .header(hyper::header::HOST, authority.as_str());
+        .header(hyper::header::HOST, authority.as_str())
+        .header(hyper::header::USER_AGENT, user_agent)
+        .header(hyper::header::ACCEPT, accept);
 
     for header in request.headers.into_iter() {
         req = req.header(header.name, header.value);
@@ -56,8 +78,14 @@ async fn make_request(request: Request) -> eyre::Result<RequestTrace> {
 
     let client: Client<_, Empty<Bytes>> = Client::builder(TokioExecutor::new()).build(https);
 
+    trace.add_request(
+        req.clone()
+            .try_into()
+            .wrap_err("Failed to parse sent request")?,
+    );
+
     let response = client
-        .request(req.clone())
+        .request(req)
         .await
         .wrap_err("Failed to send request")?;
 
@@ -75,8 +103,7 @@ async fn make_request(request: Request) -> eyre::Result<RequestTrace> {
 
     resp.with_body(body);
 
-    Ok(RequestTrace {
-        request: req.try_into().wrap_err("Failed to parse sent request")?,
-        response: resp,
-    })
+    trace.add_response(resp);
+
+    Ok(())
 }

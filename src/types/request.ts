@@ -24,4 +24,5 @@ export interface Request {
   method: Method;
   body: string | null;
   headers: Header[];
+  version?: string;
 }

@@ -2,7 +2,7 @@ import styles from "./ResponseView.module.scss";
 import { useState } from "react";
 import { Tabs } from "@/components/elements/tabs/Tabs";
 import { useResponse } from "@/hooks/useResponse";
-import { RequestTrace } from "@/types/requestTrace";
+import { RequestTrace, TraceEvent } from "@/types/requestTrace";
 import { Header, Request } from "@/types/request";
 import { Response } from "@/types/response";
 
@@ -38,12 +38,13 @@ const ResponseContent = () => {
     return <p>Send a request!</p>;
   }
 
-  const resp = response.response;
+  const events = response.events;
+  const lastResponse = events.findLast((e) => e.type === "Response");
 
   return (
     <>
       {requestError && <p> Error: {requestError}</p>}
-      <div className={styles.responseHeader}>{resp.status}</div>
+      <div className={styles.responseHeader}>{status}</div>
       <Tabs
         values={ALL_RESPONSE_VIEWS}
         activeTab={responseView}
@@ -52,17 +53,37 @@ const ResponseContent = () => {
         display={(v) => v.toUpperCase()}
       />
 
-      {responseView === "raw" ? (
-        <RawResponseView bodyString={resp.bodyString} />
-      ) : responseView === "preview" ? (
-        <PreviewResponseView bodyString={resp.bodyString} />
-      ) : responseView === "headers" ? (
-        <ResponseHeadersView headers={resp.headers} />
-      ) : (
-        <ResponseTraceView trace={response} />
-      )}
+      <ResponseViewRenderer responseView={responseView} response={response} />
     </>
   );
+};
+
+interface ResponseViewRendererProps {
+  responseView: ResponseViewPane;
+  response: RequestTrace;
+}
+
+const ResponseViewRenderer = ({
+  responseView,
+  response,
+}: ResponseViewRendererProps) => {
+  if (responseView === "trace") {
+    return <ResponseTraceView trace={response} />;
+  }
+
+  const lastResponse = response.events.findLast((e) => e.type === "Response");
+  if (!lastResponse) {
+    return <p>No response</p>;
+  }
+
+  switch (responseView) {
+    case "raw":
+      return <RawResponseView bodyString={lastResponse.bodyString} />;
+    case "headers":
+      return <ResponseHeadersView headers={lastResponse.headers} />;
+    case "preview":
+      return <PreviewResponseView bodyString={lastResponse.bodyString} />;
+  }
 };
 
 interface DisplayResponseViewProps {
@@ -114,18 +135,51 @@ const ResponseTraceView = ({ trace }: ResponseTraceViewProps) => {
   return (
     <div className={styles.codeBlock}>
       <code>
-        {requestToLines(trace.request).map((l) => (
-          <p>{l}</p>
-        ))}
-        <br />
-        <p>{"<====>"}</p>
-        <br />
-        {responseToLines(trace.response).map((l) => (
-          <p>{l}</p>
+        {trace.events.map((event) => (
+          <RenderTraceEvent event={event} />
         ))}
       </code>
     </div>
   );
+};
+
+const RenderTraceEvent = ({ event }: { event: TraceEvent }) => {
+  switch (event.type) {
+    case "Request":
+      return (
+        <>
+          {requestToLines(event).map((l) => (
+            <p>{l}</p>
+          ))}
+          <br />
+          <p>{"=======>"}</p>
+          <br />
+        </>
+      );
+    case "Response":
+      return (
+        <>
+          {responseToLines(event).map((l) => (
+            <p>{l}</p>
+          ))}
+          <br />
+          <p>{"<======="}</p>
+          <br />
+        </>
+      );
+    case "Error":
+      return (
+        <>
+          {event.errors.map((err) => (
+            <p>
+              {" * "}
+              {err}
+            </p>
+          ))}
+          <br />
+        </>
+      );
+  }
 };
 
 function requestToLines(request: Request): string[] {
@@ -134,7 +188,7 @@ function requestToLines(request: Request): string[] {
     (h) => `HEADER::${h.name}: ${h.value}`
   );
 
-  return [urlLine].concat(headerLines).map((s) => `> ${s}`);
+  return [request.version, urlLine].concat(headerLines).map((s) => `> ${s}`);
 }
 
 function responseToLines(response: Response): string[] {
